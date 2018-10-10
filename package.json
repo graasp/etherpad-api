@@ -1,0 +1,24 @@
+{
+  "name": "@hiswe/query-etherpad",
+  "version": "1.0.0",
+  "description": "Utility to query etherpad-lite from a nodeJS application",
+  "main": ".prettierrc.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hiswe/query-etherpad.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hiswe/query-etherpad/issues"
+  },
+  "homepage": "https://github.com/Hiswe/query-etherpad#readme",
+  "dependencies": {
+    "http-errors": "^1.7.1",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5"
+  }
+}
