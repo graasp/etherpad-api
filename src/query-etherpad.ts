@@ -1,8 +1,6 @@
-'use strict'
-
-const request = require('request-promise-native')
-const createError = require('http-errors')
-const { inspect, debuglog } = require('util')
+import request from 'request-promise-native'
+import createError from 'http-errors'
+import { inspect, debuglog } from 'util'
 
 const logger = debuglog(`etherpad`)
 // Talk to the last API version
@@ -17,21 +15,13 @@ const ETHERPAD_URI = `http://${ETHERPAD_URL}/api/${ETHERPAD_API_VERSION}`
 // REQUEST WRAPPER
 //////
 
-const err503Txt = `Etherpad est inaccessible. Soit il n'est pas lancé ou la configuration est mauvaise`
+const err503Txt = `Etherpad is unvailable. Soit il n'est pas lancé ou la configuration est mauvaise`
 // http://etherpad.org/doc/v1.7.0/#index_response_format
 const etherpadErrorCodes = {
   1: 422, // wrong parameters     => UnprocessableEntity
   2: 500, // internal error       => InternalServerError
   3: 501, // no such function     => NotImplemented
   4: 422, // no or wrong API Key  => UnprocessableEntity
-}
-
-const etherpadErrorMessages = {
-  'groupID does not exist': `ce groupe n'existe pas dans Etherpad`,
-  'authorID does not exist': `
-    veuillez contacter l'admin :
-    Vous êtes mal référencé sur Etherpad`,
-  'padID does not exist': `cet article n'existe pas dans Etherpad`,
 }
 module.exports = queryEtherpad
 
@@ -58,9 +48,7 @@ async function queryEtherpad(method, qs = {}, throwOnEtherpadError = true) {
     logger(`${method} doesn't work properly`, qs)
     logger(uri)
     const code = etherpadErrorCodes[body.code]
-    const message = etherpadErrorMessages[body.message]
-      ? etherpadErrorMessages[body.message]
-      : JSON.stringify(body.message)
+    const message = JSON.stringify(body.message)
     console.log(inspect(body, { colors: true }))
     const error = createError(code, message)
     if (qs.padID) error.padCreationHref = `/pads/new?pad-name=${qs.padID}`

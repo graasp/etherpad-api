@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "lib": ["es2018"]
+  },
+  "include": ["src/*.ts"],
+  "exclude": ["node_modules", "**/*.test.ts"]
+}
