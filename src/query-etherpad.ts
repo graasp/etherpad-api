@@ -8,7 +8,7 @@ import { buildEtherpadUrl, createGetParams } from './utils'
 
 const logger = debuglog(`etherpad`)
 
-const err503Txt = `Etherpad is unavailable. Soit il n'est pas lancé ou la configuration est mauvaise`
+const err503Txt: string = `Etherpad is unavailable`
 // http://etherpad.org/doc/v1.7.0/#index_response_format
 const etherpadErrorCodes = {
   1: 422, // wrong parameters     => UnprocessableEntity
@@ -29,6 +29,7 @@ export default function connect(config: Configuration): any {
     throwOnEtherpadError: boolean = true,
   ) {
     const params = getParams(method, qs)
+
     try {
       const response = await request(params)
       if (response.statusCode >= 400) {

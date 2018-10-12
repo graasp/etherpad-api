@@ -16,13 +16,5 @@ export interface ApiMethod {
 }
 
 export interface ApiMethodMap {
-  [apiMethodName: string]: ApiMethod
-}
-
-export interface RequestParams {
-  uri: string
-  json: boolean
-  resolveWithFullResponse: boolean
-  timeout: number
-  qs: any
+  readonly [apiMethodName: string]: ApiMethod
 }

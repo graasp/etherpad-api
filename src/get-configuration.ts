@@ -15,7 +15,7 @@ export default function getConfiguration(config: Configuration): Configuration {
   const url: string = isString(config.url)
     ? config.url.trim()
     : localEtherpadUrl
-  if (!validUrl.isUri(url)) throw new Error(`etherpad uri is invalid`)
+  if (!validUrl.isUri(url)) throw new Error(`etherpad url is invalid`)
 
   const apiVersion: string = isString(config.apiVersion)
     ? config.apiVersion.trim()
