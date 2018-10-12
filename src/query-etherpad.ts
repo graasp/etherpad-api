@@ -2,20 +2,13 @@ import request from 'request-promise-native'
 import createError from 'http-errors'
 import { inspect, debuglog } from 'util'
 
+import { Configuration } from './types'
+import getConfiguration from './get-configuration'
+import { buildEtherpadUrl, createGetParams } from './utils'
+
 const logger = debuglog(`etherpad`)
-// Talk to the last API version
-// http://etherpad.org/doc/v1.7.0/#index_api_version
-const ETHERPAD_URL = `pad.domain.com`
-const TIMEOUT = 3000
-const ETHERPAD_API_VERSION = `1.2.13`
-const API_KEY = `f4f719f1b70f94c56b95f6d270bccee7d495250c0fe8ad2f742deebb8cecefc7`
-const ETHERPAD_URI = `http://${ETHERPAD_URL}/api/${ETHERPAD_API_VERSION}`
 
-//////
-// REQUEST WRAPPER
-//////
-
-const err503Txt = `Etherpad is unvailable. Soit il n'est pas lancé ou la configuration est mauvaise`
+const err503Txt = `Etherpad is unavailable. Soit il n'est pas lancé ou la configuration est mauvaise`
 // http://etherpad.org/doc/v1.7.0/#index_response_format
 const etherpadErrorCodes = {
   1: 422, // wrong parameters     => UnprocessableEntity
@@ -23,40 +16,40 @@ const etherpadErrorCodes = {
   3: 501, // no such function     => NotImplemented
   4: 422, // no or wrong API Key  => UnprocessableEntity
 }
-module.exports = queryEtherpad
 
-async function queryEtherpad(method, qs = {}, throwOnEtherpadError = true) {
-  const uri = `${ETHERPAD_URI}/${method}`
-  const params = {
-    uri,
-    json: true,
-    resolveWithFullResponse: true,
-    timeout: TIMEOUT,
-    qs: Object.assign({}, { apikey: API_KEY }, qs),
-  }
+export default function connect(config: Configuration): any {
+  if (typeof config !== `object`) throw new Error(`configuration is mandatory`)
+  config = getConfiguration(config)
+  const ETHERPAD_URL: string = buildEtherpadUrl(config)
+  const getParams = createGetParams(ETHERPAD_URL, config)
 
-  try {
-    const response = await request(params)
-    if (response.statusCode >= 400) {
-      throw createError(response.statusCode, response.statusMessage)
+  async function queryEtherpad(
+    method: string,
+    qs = {},
+    throwOnEtherpadError: boolean = true,
+  ) {
+    const params = getParams(method, qs)
+    try {
+      const response = await request(params)
+      if (response.statusCode >= 400) {
+        throw createError(response.statusCode, response.statusMessage)
+      }
+      const { body } = response
+      body.code = +body.code
+
+      if (body.code === 0) return body.data
+      if (!throwOnEtherpadError) return body.data
+      logger(`${method} doesn't work properly`, qs)
+      const code = etherpadErrorCodes[body.code]
+      const message = JSON.stringify(body.message)
+      console.log(inspect(body, { colors: true }))
+      const error = createError(code, message)
+      throw error
+    } catch (error) {
+      logger(`error`)
+      if (error.code === `ETIMEDOUT`) throw createError(408)
+      if (error.code === `ECONNREFUSED`) throw createError(503, err503Txt)
+      throw error
     }
-    const { body } = response
-    body.code = +body.code
-
-    if (body.code === 0) return body.data
-    if (!throwOnEtherpadError) return body.data
-    logger(`${method} doesn't work properly`, qs)
-    logger(uri)
-    const code = etherpadErrorCodes[body.code]
-    const message = JSON.stringify(body.message)
-    console.log(inspect(body, { colors: true }))
-    const error = createError(code, message)
-    if (qs.padID) error.padCreationHref = `/pads/new?pad-name=${qs.padID}`
-    throw error
-  } catch (error) {
-    logger(`error`)
-    if (error.code === `ETIMEDOUT`) throw createError(408)
-    if (error.code === `ECONNREFUSED`) throw createError(503, err503Txt)
-    throw error
   }
 }

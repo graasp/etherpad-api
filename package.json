@@ -17,12 +17,15 @@
   },
   "homepage": "https://github.com/Hiswe/query-etherpad#readme",
   "dependencies": {
+    "compare-versions": "^3.4.0",
     "http-errors": "^1.7.1",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.5",
+    "valid-url": "^1.0.9"
   },
   "devDependencies": {
     "@types/node": "^10.11.7",
-    "typescript": "^3.1.2"
+    "@types/request-promise-native": "^1.0.15",
+    "typescript": "^3.1.3"
   }
 }
