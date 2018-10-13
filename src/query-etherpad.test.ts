@@ -41,6 +41,13 @@ nock(`${conf.url}/api/${conf.apiVersion}`)
     message: 'no or wrong API Key',
     data: null,
   })
+  .get(`/createGroupPad`)
+  .query(true)
+  .reply(200, {
+    code: 1,
+    message: 'pad does already exist',
+    data: null,
+  })
 
 test(`bad options`, t => {
   // @ts-ignore
@@ -99,4 +106,16 @@ test(`api error – code 4 => 422`, async t => {
   const error = await t.throwsAsync(() => etherpad.checkToken())
   t.is(error.statusCode, 422, `has the right status code`)
   t.is(error.message, `no or wrong API Key`, `keep etherpad message`)
+})
+
+test(`api error – we can choose to ignore errors`, async t => {
+  const etherpad = connect(conf)
+  const data = await etherpad.createGroupPad(
+    {
+      groupID: `hiswe`,
+      padName: `halya`,
+    },
+    false,
+  )
+  t.is(data, null, `doesn't throw and send us the Etherpad data`)
 })

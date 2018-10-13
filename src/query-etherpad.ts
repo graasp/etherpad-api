@@ -131,13 +131,13 @@ export default function connect(config: Configuration) {
     async createGroupPad(
       qs: {
         groupID: string
-        name: string
+        padName: string
         text?: string
       },
       throwOnEtherpadError: boolean = true,
     ) {
       checkVersion(`1.0.0`)
-      return queryEtherpad(`deleteGroup`, qs, throwOnEtherpadError)
+      return queryEtherpad(`createGroupPad`, qs, throwOnEtherpadError)
     },
 
     async listAllGroups(qs?: void, throwOnEtherpadError: boolean = true) {
