@@ -16,10 +16,12 @@ export function buildEtherpadUrl(config: Configuration): string {
   return ETHERPAD_URL.toString()
 }
 
+type RequestParamsGenerator = (method: string, qs: any) => OptionsWithUri
+
 export const createGetParams = (
   ETHERPAD_URL: string,
   config: Configuration,
-): any => (method: string, qs: any): OptionsWithUri => {
+): RequestParamsGenerator => (method: string, qs: any): OptionsWithUri => {
   const options: OptionsWithUri = {
     uri: `${ETHERPAD_URL}/${method}`,
     json: true,
