@@ -20,16 +20,20 @@ const etherpadErrorCodes = {
   4: 422, // no or wrong API Key  => UnprocessableEntity
 }
 
-interface groupID {
+interface GroupID {
   groupID: string
 }
 
-interface authorID {
+interface AuthorID {
   authorID: string
 }
 
-interface SessionId {
+interface SessionID {
   sessionID: string
+}
+
+interface PadID {
+  padID: string
 }
 
 export default function connect(config: Configuration): any {
@@ -88,6 +92,7 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.0.0`)
       return queryEtherpad(`createGroup`, qs, throwOnEtherpadError)
     },
+
     async createGroupIfNotExistsFor(
       qs: { groupMapper: string },
       throwOnEtherpadError: boolean = true,
@@ -99,14 +104,17 @@ export default function connect(config: Configuration): any {
         throwOnEtherpadError,
       )
     },
-    async deleteGroup(qs: groupID, throwOnEtherpadError: boolean = true) {
+
+    async deleteGroup(qs: GroupID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`deleteGroup`, qs, throwOnEtherpadError)
     },
-    async listPads(qs: groupID, throwOnEtherpadError: boolean = true) {
+
+    async listPads(qs: GroupID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`deleteGroup`, qs, throwOnEtherpadError)
     },
+
     async createGroupPad(
       qs: {
         groupID: string
@@ -118,6 +126,7 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.0.0`)
       return queryEtherpad(`deleteGroup`, qs, throwOnEtherpadError)
     },
+
     async listAllGroups(qs: void, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`deleteGroup`, qs, throwOnEtherpadError)
@@ -136,6 +145,7 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.0.0`)
       return queryEtherpad(`createAuthor`, qs, throwOnEtherpadError)
     },
+
     async createAuthorIfNotExistsFor(
       qs: {
         authorMapper: string
@@ -150,11 +160,13 @@ export default function connect(config: Configuration): any {
         throwOnEtherpadError,
       )
     },
-    async listPadsOfAuthor(qs: authorID, throwOnEtherpadError: boolean = true) {
+
+    async listPadsOfAuthor(qs: AuthorID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`listPadsOfAuthor`, qs, throwOnEtherpadError)
     },
-    async getAuthorName(qs: authorID, throwOnEtherpadError: boolean = true) {
+
+    async getAuthorName(qs: AuthorID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.1.0`)
       return queryEtherpad(`getAuthorName`, qs, throwOnEtherpadError)
     },
@@ -174,23 +186,27 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.0.0`)
       return queryEtherpad(`createSession`, qs, throwOnEtherpadError)
     },
-    async deleteSession(qs: SessionId, throwOnEtherpadError: boolean = true) {
+
+    async deleteSession(qs: SessionID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`deleteSession`, qs, throwOnEtherpadError)
     },
-    async getSessionInfo(qs: SessionId, throwOnEtherpadError: boolean = true) {
+
+    async getSessionInfo(qs: SessionID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getSessionInfo`, qs, throwOnEtherpadError)
     },
+
     async listSessionsOfGroup(
-      qs: SessionId,
+      qs: SessionID,
       throwOnEtherpadError: boolean = true,
     ) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`listSessionsOfGroup`, qs, throwOnEtherpadError)
     },
+
     async listSessionsOfAuthor(
-      qs: SessionId,
+      qs: SessionID,
       throwOnEtherpadError: boolean = true,
     ) {
       checkVersion(`1.0.0`)
@@ -211,6 +227,7 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getText`, qs, throwOnEtherpadError)
     },
+
     async setText(
       qs: {
         padID: string
@@ -221,6 +238,7 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.0.0`)
       return queryEtherpad(`setText`, qs, throwOnEtherpadError)
     },
+
     async appendText(
       qs: {
         padID: string
@@ -231,6 +249,7 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.2.13`)
       return queryEtherpad(`appendText`, qs, throwOnEtherpadError)
     },
+
     async getHTML(
       qs: {
         padID: string
@@ -241,6 +260,7 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getHTML`, qs, throwOnEtherpadError)
     },
+
     async setHTML(
       qs: {
         padID: string
@@ -251,10 +271,12 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.0.0`)
       return queryEtherpad(`setHTML`, qs, throwOnEtherpadError)
     },
-    async getAttributePool(qs: { padID: string }, throwOnEtherpadError) {
+
+    async getAttributePool(qs: PadID, throwOnEtherpadError) {
       checkVersion(`1.2.8`)
       return queryEtherpad(`getAttributePool`, qs, throwOnEtherpadError)
     },
+
     async getRevisionChangeset(
       qs: {
         padID: string
@@ -265,6 +287,7 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.2.8`)
       return queryEtherpad(`getRevisionChangeset`, qs, throwOnEtherpadError)
     },
+
     async createDiffHTML(
       qs: {
         padID: string
@@ -276,6 +299,7 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.2.7`)
       return queryEtherpad(`createDiffHTML`, qs, throwOnEtherpadError)
     },
+
     async restoreRevision(
       qs: {
         padID: string
@@ -302,15 +326,12 @@ export default function connect(config: Configuration): any {
       checkVersion(`1.2.7`)
       return queryEtherpad(`getChatHistory`, qs, throwOnEtherpadError)
     },
-    async getChatHead(
-      qs: {
-        padID: string
-      },
-      throwOnEtherpadError: boolean = true,
-    ) {
+
+    async getChatHead(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.2.7`)
       return queryEtherpad(`getChatHead`, qs, throwOnEtherpadError)
     },
+
     async appendChatMessage(
       qs: {
         padID: string
@@ -328,215 +349,154 @@ export default function connect(config: Configuration): any {
     // PAD
     ////////
 
-    async createPad(qs: any, throwOnEtherpadError: boolean = true) {
+    async createPad(
+      qs: {
+        padID: string
+        text?: string
+      },
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`createPad`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-        {
-          name: `text`,
-          optional: true,
-        },
-      ]
     },
-    async getRevisionsCount(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async getRevisionsCount(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getRevisionsCount`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
+
     async getSavedRevisionsCount(
-      qs: any,
+      qs: PadID,
       throwOnEtherpadError: boolean = true,
     ) {
       checkVersion(`1.2.11`)
       return queryEtherpad(`getSavedRevisionsCount`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async listSavedRevisions(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async listSavedRevisions(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.2.11`)
       return queryEtherpad(`listSavedRevisions`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async saveRevision(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async saveRevision(
+      qs: {
+        padID: string
+        rev: string
+      },
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.2.11`)
       return queryEtherpad(`saveRevision`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-        {
-          name: `rev`,
-          optional: true,
-        },
-      ]
     },
-    async padUsersCount(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async padUsersCount(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`padUsersCount`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async padUsers(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async padUsers(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.1.0`)
       return queryEtherpad(`padUsers`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async deletePad(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async deletePad(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`deletePad`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async copyPad(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async copyPad(
+      qs: {
+        sourceID: string
+        destinationID: string
+        force: boolean
+      },
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.2.8`)
       return queryEtherpad(`copyPad`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `sourceID`,
-        },
-        {
-          name: `destinationID`,
-        },
-        {
-          name: `force`,
-          optional: true,
-        },
-      ]
     },
-    async movePad(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async movePad(
+      qs: {
+        sourceID: string
+        destinationID: string
+        force: boolean
+      },
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.2.8`)
       return queryEtherpad(`movePad`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `sourceID`,
-        },
-        {
-          name: `destinationID`,
-        },
-        {
-          name: `force`,
-          optional: true,
-        },
-      ]
     },
-    async getReadOnlyID(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async getReadOnlyID(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getReadOnlyID`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async getPadID(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async getPadID(
+      qs: { readOnlyID: string },
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.2.10`)
       return queryEtherpad(`getPadID`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `readOnlyID`,
-        },
-      ]
     },
-    async setPublicStatus(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async setPublicStatus(
+      qs: {
+        readOnlyID: string
+        publicStatus: boolean
+      },
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`setPublicStatus`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `readOnlyID`,
-        },
-        {
-          name: `publicStatus`,
-        },
-      ]
     },
-    async getPublicStatus(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async getPublicStatus(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getPublicStatus`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async setPassword(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async setPassword(
+      qs: {
+        padID: string
+        password: string
+      },
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`setPassword`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-        {
-          name: `password`,
-        },
-      ]
     },
-    async isPasswordProtected(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async isPasswordProtected(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`isPasswordProtected`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async listAuthorsOfPad(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async listAuthorsOfPad(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`listAuthorsOfPad`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async getLastEdited(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async getLastEdited(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getLastEdited`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-      ]
     },
-    async sendClientsMessage(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async sendClientsMessage(
+      qs: {
+        padID: string
+        msg: string
+      },
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.1.0`)
       return queryEtherpad(`sendClientsMessage`, qs, throwOnEtherpadError)
-      const params = [
-        {
-          name: `padID`,
-        },
-        {
-          name: `msg`,
-        },
-      ]
     },
-    async checkToken(qs: any, throwOnEtherpadError: boolean = true) {
+
+    async checkToken(qs: void, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.2.0`)
       return queryEtherpad(`checkToken`, qs, throwOnEtherpadError)
-      const params = []
     },
   }
 
