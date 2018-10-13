@@ -65,6 +65,9 @@ nock(`${conf.url}/api/${conf.apiVersion}`)
     message: 'ok',
     data: { html: 'Welcome Text<br>More Text' },
   })
+  .get(`/sendClientsMessage`)
+  .query(true)
+  .replyWithError({ code: `ECONNREFUSED` })
 
 test(`bad options`, t => {
   // @ts-ignore
@@ -161,4 +164,13 @@ test(`server error – timeout`, async t => {
   const error = await t.throwsAsync(() => etherpad.getHTML({ padID: `hiswe` }))
   t.is(error.statusCode, 408)
   t.is(error.message, 'Request Timeout')
+})
+
+test(`server error – connection refuse`, async t => {
+  const etherpad = connect(conf)
+  const error = await t.throwsAsync(() =>
+    etherpad.sendClientsMessage({ padID: `hiswe`, msg: `coucou` }),
+  )
+  t.is(error.statusCode, 503)
+  t.is(error.message, 'Etherpad is unavailable')
 })

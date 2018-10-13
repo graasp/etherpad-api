@@ -6,7 +6,12 @@ import { OptionsWithUri } from 'request-promise-native'
 
 import { Configuration, RequestParamsGenerator } from './types'
 import checkConfiguration from './check-configuration'
-import { buildEtherpadUrl, createGetParams } from './utils'
+import {
+  buildEtherpadUrl,
+  createGetParams,
+  isTimeout,
+  isConnectionRefused,
+} from './utils'
 
 const logger = debuglog(`etherpad`)
 
@@ -76,11 +81,8 @@ export default function connect(config: Configuration) {
       // All failed requests are handled here with request-promise-*
       // https://www.npmjs.com/package/request-promise#rejected-promises-and-the-simple-option
       logger(error)
-      // ESOCKETTIMEDOUT is returned while testing with Nock…
-      if (error.code === `ETIMEDOUT` || /TIMEDOUT/.test(error.message)) {
-        throw createError(408)
-      }
-      if (error.code === `ECONNREFUSED`) throw createError(503, err503Txt)
+      if (isTimeout(error)) throw createError(408)
+      if (isConnectionRefused(error)) throw createError(503, err503Txt)
       throw createError(error.statusCode, error.message || error.statusMessage)
     }
   }
@@ -149,9 +151,7 @@ export default function connect(config: Configuration) {
     ////////
 
     async createAuthor(
-      qs: {
-        name?: string
-      },
+      qs: { name?: string },
       throwOnEtherpadError: boolean = true,
     ) {
       checkVersion(`1.0.0`)

@@ -37,3 +37,12 @@ export const createGetParams = (
   }
   return options
 }
+
+// can test both ETIMEDOUT & ESOCKETTIMEDOUT
+export function isTimeout(error): boolean {
+  return /TIMEDOUT/.test((error.error && error.error.code) || error.code)
+}
+
+export function isConnectionRefused(error): boolean {
+  return /ECONNREFUSED/.test((error.error && error.error.code) || error.code)
+}
