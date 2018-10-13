@@ -1,14 +1,46 @@
 import test from 'ava'
+import nock from 'nock'
 
 import connect from './query-etherpad'
-import { messages } from './check-configuration'
+import checkConfiguration, { messages } from './check-configuration'
 import { Configuration } from './types'
 
 import { supportedMethods } from './_test-utils'
 
-const conf: Configuration = {
+const conf: Configuration = checkConfiguration({
   apiKey: `6b95f6d270f4f719f1b70e8ad2f742deef94c5bccee7d495250c0fbb8cecefc7`,
-}
+  url: `http://etherpad.com`,
+})
+
+nock(`${conf.url}/api/${conf.apiVersion}`)
+  .get(`/listAllPads`)
+  .query(true)
+  .reply(200, {
+    code: 0,
+    message: 'ok',
+    data: { padIDs: ['testPad', 'thePadsOfTheOthers'] },
+  })
+  .get(`/getLastEdited`)
+  .query(true)
+  .reply(200, {
+    code: 1,
+    message: `padID does not exist`,
+    data: null,
+  })
+  .get(`/listAllGroups`)
+  .query(true)
+  .reply(200, {
+    code: 2,
+    message: 'internal error',
+    data: null,
+  })
+  .get(`/checkToken`)
+  .query(true)
+  .reply(200, {
+    code: 4,
+    message: 'no or wrong API Key',
+    data: null,
+  })
 
 test(`bad options`, t => {
   // @ts-ignore
@@ -34,4 +66,37 @@ test(`method throw if not supported by the api version`, async t => {
     `Not implemented in Etherpad API v1.0.0. You should upgrade to >=v1.2.1`,
     `has the right error message`,
   )
+})
+
+test(`regular call`, async t => {
+  const etherpad = connect(conf)
+  const data = await etherpad.listAllPads()
+  t.deepEqual(
+    data,
+    { padIDs: ['testPad', 'thePadsOfTheOthers'] },
+    `get only etherpad data`,
+  )
+})
+
+test(`api error – code 1 => 422`, async t => {
+  const etherpad = connect(conf)
+  const error = await t.throwsAsync(() =>
+    etherpad.getLastEdited({ padID: `tutu` }),
+  )
+  t.is(error.statusCode, 422, `has the right status code`)
+  t.is(error.message, `padID does not exist`, `keep etherpad message`)
+})
+
+test(`api error – code 2 => 500`, async t => {
+  const etherpad = connect(conf)
+  const error = await t.throwsAsync(() => etherpad.listAllGroups())
+  t.is(error.statusCode, 500, `has the right status code`)
+  t.is(error.message, `internal error`, `keep etherpad message`)
+})
+
+test(`api error – code 4 => 422`, async t => {
+  const etherpad = connect(conf)
+  const error = await t.throwsAsync(() => etherpad.checkToken())
+  t.is(error.statusCode, 422, `has the right status code`)
+  t.is(error.message, `no or wrong API Key`, `keep etherpad message`)
 })

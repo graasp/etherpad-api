@@ -74,7 +74,7 @@ export default function connect(config: Configuration) {
       if (!throwOnEtherpadError) return body.data
       logger(`${method} doesn't work properly`, qs)
       const code = etherpadErrorCodes[body.code]
-      const message = JSON.stringify(body.message)
+      const message = body.message
       logger(inspect(body, { colors: true }))
       const error = createError(code, message)
       throw error
@@ -125,7 +125,7 @@ export default function connect(config: Configuration) {
 
     async listPads(qs: GroupID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
-      return queryEtherpad(`deleteGroup`, qs, throwOnEtherpadError)
+      return queryEtherpad(`listPads`, qs, throwOnEtherpadError)
     },
 
     async createGroupPad(
@@ -142,7 +142,7 @@ export default function connect(config: Configuration) {
 
     async listAllGroups(qs?: void, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
-      return queryEtherpad(`deleteGroup`, qs, throwOnEtherpadError)
+      return queryEtherpad(`listAllGroups`, qs, throwOnEtherpadError)
     },
 
     ////////
@@ -488,7 +488,7 @@ export default function connect(config: Configuration) {
 
     async listAllPads(qs?: void, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.2.1`)
-      return queryEtherpad(`checkToken`, qs, throwOnEtherpadError)
+      return queryEtherpad(`listAllPads`, qs, throwOnEtherpadError)
     },
   }
 
