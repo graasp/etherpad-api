@@ -210,7 +210,7 @@ export default function connect(config: Configuration) {
     },
 
     async listSessionsOfGroup(
-      qs: SessionID,
+      qs: GroupID,
       throwOnEtherpadError: boolean = true,
     ) {
       checkVersion(`1.0.0`)
@@ -218,7 +218,7 @@ export default function connect(config: Configuration) {
     },
 
     async listSessionsOfAuthor(
-      qs: SessionID,
+      qs: AuthorID,
       throwOnEtherpadError: boolean = true,
     ) {
       checkVersion(`1.0.0`)
@@ -370,10 +370,7 @@ export default function connect(config: Configuration) {
     },
 
     async saveRevision(
-      qs: {
-        padID: string
-        rev: string
-      },
+      qs: PadWithOptionalRev,
       throwOnEtherpadError: boolean = true,
     ) {
       checkVersion(`1.2.11`)
@@ -399,7 +396,7 @@ export default function connect(config: Configuration) {
       qs: {
         sourceID: string
         destinationID: string
-        force: boolean
+        force?: boolean
       },
       throwOnEtherpadError: boolean = true,
     ) {
@@ -411,7 +408,7 @@ export default function connect(config: Configuration) {
       qs: {
         sourceID: string
         destinationID: string
-        force: boolean
+        force?: boolean
       },
       throwOnEtherpadError: boolean = true,
     ) {
@@ -434,7 +431,7 @@ export default function connect(config: Configuration) {
 
     async setPublicStatus(
       qs: {
-        readOnlyID: string
+        padID: string
         publicStatus: boolean
       },
       throwOnEtherpadError: boolean = true,
