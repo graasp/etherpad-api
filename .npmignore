@@ -1,0 +1,9 @@
+.rpt2_cache
+.vscode
+src
+.gitignore
+.prettierrc.js
+ava.config.js
+package-lock.json
+rollup.config.js
+tsconfig.json

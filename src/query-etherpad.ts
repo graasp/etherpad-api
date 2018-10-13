@@ -47,7 +47,7 @@ interface PadWithText extends PadID {
   text: string
 }
 
-export default function connect(config: Configuration): any {
+export default function connect(config: Configuration): EtherpadMethodMap {
   if (typeof config !== `object`) {
     throw new Error(`etherpad configuration is mandatory`)
   }
@@ -62,7 +62,7 @@ export default function connect(config: Configuration): any {
     method: string,
     qs: any = {},
     throwOnEtherpadError: boolean = true,
-  ) {
+  ): Promise<any> {
     const params: OptionsWithUri = getParams(method, qs)
 
     try {
