@@ -1,5 +1,6 @@
 import test from 'ava'
 import nock from 'nock'
+import createError from 'http-errors'
 
 import connect from './query-etherpad'
 import checkConfiguration, { messages } from './check-configuration'
@@ -10,6 +11,7 @@ import { supportedMethods } from './_test-utils'
 const conf: Configuration = checkConfiguration({
   apiKey: `6b95f6d270f4f719f1b70e8ad2f742deef94c5bccee7d495250c0fbb8cecefc7`,
   url: `http://etherpad.com`,
+  timeout: 40,
 })
 
 nock(`${conf.url}/api/${conf.apiVersion}`)
@@ -48,6 +50,14 @@ nock(`${conf.url}/api/${conf.apiVersion}`)
     message: 'pad does already exist',
     data: null,
   })
+  // don't use replyWithError because it doesn't set any status code
+  // https://www.npmjs.com/package/nock#replying-with-errors
+  .get(`/deleteSession`)
+  .query(true)
+  .reply(400, `BadRequest`)
+  .get(`/getAuthorName`)
+  .query(true)
+  .reply(509, `NetworkAuthenticationRequired`)
 
 test(`bad options`, t => {
   // @ts-ignore
@@ -118,4 +128,23 @@ test(`api error – we can choose to ignore errors`, async t => {
     false,
   )
   t.is(data, null, `doesn't throw and send us the Etherpad data`)
+})
+
+test(`server error – are handled `, async t => {
+  const etherpad = connect(conf)
+  const error400 = await t.throwsAsync(() =>
+    etherpad.deleteSession({ sessionID: `hiswe` }),
+  )
+  t.is(error400.statusCode, 400, `has the right status code`)
+  // don't know why nock doesn't keep the original message…
+  t.is(error400.message, `400 - "BadRequest"`, `keep etherpad message`)
+  const error509 = await t.throwsAsync(() =>
+    etherpad.getAuthorName({ authorID: `hiswe` }),
+  )
+  t.is(error509.statusCode, 509, `has the right status code`)
+  t.is(
+    error509.message,
+    `509 - "NetworkAuthenticationRequired"`,
+    `keep etherpad message`,
+  )
 })

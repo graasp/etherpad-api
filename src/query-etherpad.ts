@@ -80,9 +80,10 @@ export default function connect(config: Configuration) {
       throw error
     } catch (error) {
       logger(`error`)
+      logger(error)
       if (error.code === `ETIMEDOUT`) throw createError(408)
       if (error.code === `ECONNREFUSED`) throw createError(503, err503Txt)
-      throw error
+      throw createError(error.statusCode, error.message || error.statusMessage)
     }
   }
 
