@@ -9,7 +9,7 @@ import {
   RequestParamsGenerator,
   EtherpadMethodMap,
 } from './types'
-import getConfiguration from './get-configuration'
+import checkConfiguration from './check-configuration'
 import { buildEtherpadUrl, createGetParams } from './utils'
 
 const logger = debuglog(`etherpad`)
@@ -51,7 +51,7 @@ export default function connect(config: Configuration): EtherpadMethodMap {
   if (typeof config !== `object`) {
     throw new Error(`etherpad configuration is mandatory`)
   }
-  config = getConfiguration(config)
+  config = checkConfiguration(config)
   const ETHERPAD_URL: string = buildEtherpadUrl(config)
   const getParams: RequestParamsGenerator = createGetParams(
     ETHERPAD_URL,
