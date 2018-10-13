@@ -1,3 +1,5 @@
+import { OptionsWithUri } from 'request-promise-native'
+
 export interface Configuration {
   url?: string
   apiKey: string
@@ -5,16 +7,13 @@ export interface Configuration {
   timeout?: number
 }
 
-export interface ApiParam {
-  readonly name: string
-  readonly optional?: boolean
-}
+export type RequestParamsGenerator = (method: string, qs: any) => OptionsWithUri
 
-export interface ApiMethod {
-  readonly version: string
-  readonly params: ApiParam[]
-}
+export type EtherpadMethod = (
+  qs: any,
+  throwOnEtherpadError: boolean,
+) => Promise<any>
 
-export interface ApiMethodMap {
-  readonly [apiMethodName: string]: ApiMethod
+export interface EtherpadMethodMap {
+  readonly [apiMethodName: string]: EtherpadMethod
 }

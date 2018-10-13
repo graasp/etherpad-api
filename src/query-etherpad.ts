@@ -2,12 +2,15 @@ import request from 'request-promise-native'
 import createError from 'http-errors'
 import { inspect, debuglog } from 'util'
 import compareVersions from 'compare-versions'
+import { OptionsWithUri } from 'request-promise-native'
 
-import { Configuration } from './types'
+import {
+  Configuration,
+  RequestParamsGenerator,
+  EtherpadMethodMap,
+} from './types'
 import getConfiguration from './get-configuration'
 import { buildEtherpadUrl, createGetParams } from './utils'
-import * as apiMethodsDescriptor from './api-methods'
-import { stringify } from 'querystring'
 
 const logger = debuglog(`etherpad`)
 
@@ -36,21 +39,35 @@ interface PadID {
   padID: string
 }
 
+interface PadWithOptionalRev extends PadID {
+  rev?: string
+}
+
+interface PadWithText extends PadID {
+  text: string
+}
+
 export default function connect(config: Configuration): any {
-  if (typeof config !== `object`) throw new Error(`configuration is mandatory`)
+  if (typeof config !== `object`) {
+    throw new Error(`etherpad configuration is mandatory`)
+  }
   config = getConfiguration(config)
   const ETHERPAD_URL: string = buildEtherpadUrl(config)
-  const getParams = createGetParams(ETHERPAD_URL, config)
+  const getParams: RequestParamsGenerator = createGetParams(
+    ETHERPAD_URL,
+    config,
+  )
 
   async function queryEtherpad(
     method: string,
     qs: any = {},
     throwOnEtherpadError: boolean = true,
   ) {
-    const params = getParams(method, qs)
+    const params: OptionsWithUri = getParams(method, qs)
 
     try {
       const response = await request(params)
+      // always throw on request bad response
       if (response.statusCode >= 400) {
         throw createError(response.statusCode, response.statusMessage)
       }
@@ -58,11 +75,14 @@ export default function connect(config: Configuration): any {
       body.code = +body.code
 
       if (body.code === 0) return body.data
+      // silence etherpad error
+      // ex: when wanting to know if a pad exist we might query it to check
+      //     response will be bad be it's not an error per se
       if (!throwOnEtherpadError) return body.data
       logger(`${method} doesn't work properly`, qs)
       const code = etherpadErrorCodes[body.code]
       const message = JSON.stringify(body.message)
-      console.log(inspect(body, { colors: true }))
+      logger(inspect(body, { colors: true }))
       const error = createError(code, message)
       throw error
     } catch (error) {
@@ -75,7 +95,6 @@ export default function connect(config: Configuration): any {
 
   function checkVersion(methodVersion: string): void {
     const result = compareVersions(config.apiVersion, methodVersion)
-
     if (result < 0) {
       const message = `Not implemented in Etherpad API v${config.apiVersion}.
       You should upgrade to >=v${methodVersion}.`
@@ -83,7 +102,7 @@ export default function connect(config: Configuration): any {
     }
   }
 
-  const etherPadApi: any = {
+  const etherPadApi: EtherpadMethodMap = {
     ////////
     // GROUPS
     ////////
@@ -217,46 +236,22 @@ export default function connect(config: Configuration): any {
     // PAD CONTENT
     ////////
 
-    async getText(
-      qs: {
-        padID: string
-        rev?: string
-      },
-      throwOnEtherpadError,
-    ) {
+    async getText(qs: PadWithOptionalRev, throwOnEtherpadError) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getText`, qs, throwOnEtherpadError)
     },
 
-    async setText(
-      qs: {
-        padID: string
-        text: string
-      },
-      throwOnEtherpadError,
-    ) {
+    async setText(qs: PadWithText, throwOnEtherpadError) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`setText`, qs, throwOnEtherpadError)
     },
 
-    async appendText(
-      qs: {
-        padID: string
-        text: string
-      },
-      throwOnEtherpadError,
-    ) {
+    async appendText(qs: PadWithText, throwOnEtherpadError) {
       checkVersion(`1.2.13`)
       return queryEtherpad(`appendText`, qs, throwOnEtherpadError)
     },
 
-    async getHTML(
-      qs: {
-        padID: string
-        rev?: string
-      },
-      throwOnEtherpadError,
-    ) {
+    async getHTML(qs: PadWithOptionalRev, throwOnEtherpadError) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getHTML`, qs, throwOnEtherpadError)
     },
@@ -277,13 +272,7 @@ export default function connect(config: Configuration): any {
       return queryEtherpad(`getAttributePool`, qs, throwOnEtherpadError)
     },
 
-    async getRevisionChangeset(
-      qs: {
-        padID: string
-        rev?: string
-      },
-      throwOnEtherpadError,
-    ) {
+    async getRevisionChangeset(qs: PadWithOptionalRev, throwOnEtherpadError) {
       checkVersion(`1.2.8`)
       return queryEtherpad(`getRevisionChangeset`, qs, throwOnEtherpadError)
     },
@@ -496,6 +485,15 @@ export default function connect(config: Configuration): any {
 
     async checkToken(qs: void, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.2.0`)
+      return queryEtherpad(`checkToken`, qs, throwOnEtherpadError)
+    },
+
+    ////////
+    // PADS
+    ////////
+
+    async listAllPads(qs: void, throwOnEtherpadError: boolean = true) {
+      checkVersion(`1.2.1`)
       return queryEtherpad(`checkToken`, qs, throwOnEtherpadError)
     },
   }

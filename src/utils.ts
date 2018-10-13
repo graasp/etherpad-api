@@ -1,6 +1,7 @@
-import { Configuration } from './types'
 import { URL } from 'url'
 import { OptionsWithUri } from 'request-promise-native'
+
+import { Configuration, RequestParamsGenerator } from './types'
 
 export function isString(text: any): text is string {
   return typeof text === `string` && text.length > 0
@@ -15,8 +16,6 @@ export function buildEtherpadUrl(config: Configuration): string {
   ETHERPAD_URL.pathname = `api/${config.apiVersion}`
   return ETHERPAD_URL.toString()
 }
-
-type RequestParamsGenerator = (method: string, qs: any) => OptionsWithUri
 
 export const createGetParams = (
   ETHERPAD_URL: string,
