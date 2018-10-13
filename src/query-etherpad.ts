@@ -59,14 +59,8 @@ export default function connect(config: Configuration) {
     const params: OptionsWithUri = getParams(method, qs)
 
     try {
-      const response = await request(params)
-      // always throw on request bad response
-      if (response.statusCode >= 400) {
-        throw createError(response.statusCode, response.statusMessage)
-      }
-      const { body } = response
+      const body = await request(params)
       body.code = +body.code
-
       if (body.code === 0) return body.data
       // silence etherpad error
       // ex: when wanting to know if a pad exist we might query it to check
@@ -79,9 +73,13 @@ export default function connect(config: Configuration) {
       const error = createError(code, message)
       throw error
     } catch (error) {
-      logger(`error`)
+      // All failed requests are handled here with request-promise-*
+      // https://www.npmjs.com/package/request-promise#rejected-promises-and-the-simple-option
       logger(error)
-      if (error.code === `ETIMEDOUT`) throw createError(408)
+      // ESOCKETTIMEDOUT is returned while testing with Nock…
+      if (error.code === `ETIMEDOUT` || /TIMEDOUT/.test(error.message)) {
+        throw createError(408)
+      }
       if (error.code === `ECONNREFUSED`) throw createError(503, err503Txt)
       throw createError(error.statusCode, error.message || error.statusMessage)
     }
@@ -231,22 +229,28 @@ export default function connect(config: Configuration) {
     // PAD CONTENT
     ////////
 
-    async getText(qs: PadWithOptionalRev, throwOnEtherpadError) {
+    async getText(
+      qs: PadWithOptionalRev,
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getText`, qs, throwOnEtherpadError)
     },
 
-    async setText(qs: PadWithText, throwOnEtherpadError) {
+    async setText(qs: PadWithText, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`setText`, qs, throwOnEtherpadError)
     },
 
-    async appendText(qs: PadWithText, throwOnEtherpadError) {
+    async appendText(qs: PadWithText, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.2.13`)
       return queryEtherpad(`appendText`, qs, throwOnEtherpadError)
     },
 
-    async getHTML(qs: PadWithOptionalRev, throwOnEtherpadError) {
+    async getHTML(
+      qs: PadWithOptionalRev,
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`getHTML`, qs, throwOnEtherpadError)
     },
@@ -262,12 +266,15 @@ export default function connect(config: Configuration) {
       return queryEtherpad(`setHTML`, qs, throwOnEtherpadError)
     },
 
-    async getAttributePool(qs: PadID, throwOnEtherpadError) {
+    async getAttributePool(qs: PadID, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.2.8`)
       return queryEtherpad(`getAttributePool`, qs, throwOnEtherpadError)
     },
 
-    async getRevisionChangeset(qs: PadWithOptionalRev, throwOnEtherpadError) {
+    async getRevisionChangeset(
+      qs: PadWithOptionalRev,
+      throwOnEtherpadError: boolean = true,
+    ) {
       checkVersion(`1.2.8`)
       return queryEtherpad(`getRevisionChangeset`, qs, throwOnEtherpadError)
     },

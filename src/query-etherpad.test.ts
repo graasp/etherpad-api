@@ -1,6 +1,5 @@
 import test from 'ava'
 import nock from 'nock'
-import createError from 'http-errors'
 
 import connect from './query-etherpad'
 import checkConfiguration, { messages } from './check-configuration'
@@ -58,6 +57,14 @@ nock(`${conf.url}/api/${conf.apiVersion}`)
   .get(`/getAuthorName`)
   .query(true)
   .reply(509, `NetworkAuthenticationRequired`)
+  .get(`/getHTML`)
+  .query(true)
+  .delay(100)
+  .reply(200, {
+    code: 0,
+    message: 'ok',
+    data: { html: 'Welcome Text<br>More Text' },
+  })
 
 test(`bad options`, t => {
   // @ts-ignore
@@ -147,4 +154,11 @@ test(`server error – are handled `, async t => {
     `509 - "NetworkAuthenticationRequired"`,
     `keep etherpad message`,
   )
+})
+
+test(`server error – timeout`, async t => {
+  const etherpad = connect(conf)
+  const error = await t.throwsAsync(() => etherpad.getHTML({ padID: `hiswe` }))
+  t.is(error.statusCode, 408)
+  t.is(error.message, 'Request Timeout')
 })

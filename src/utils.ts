@@ -32,7 +32,6 @@ export const createGetParams = (
   const options: OptionsWithUri = {
     uri: `${ETHERPAD_URL}/${method}`,
     json: true,
-    resolveWithFullResponse: true,
     timeout: config.timeout,
     qs: { ...qs, apikey: config.apiKey },
   }
