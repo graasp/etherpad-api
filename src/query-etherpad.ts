@@ -4,11 +4,7 @@ import { inspect, debuglog } from 'util'
 import compareVersions from 'compare-versions'
 import { OptionsWithUri } from 'request-promise-native'
 
-import {
-  Configuration,
-  RequestParamsGenerator,
-  EtherpadMethodMap,
-} from './types'
+import { Configuration, RequestParamsGenerator } from './types'
 import checkConfiguration from './check-configuration'
 import { buildEtherpadUrl, createGetParams } from './utils'
 
@@ -47,7 +43,7 @@ interface PadWithText extends PadID {
   text: string
 }
 
-export default function connect(config: Configuration): EtherpadMethodMap {
+export default function connect(config: Configuration) {
   config = checkConfiguration(config)
   const ETHERPAD_URL: string = buildEtherpadUrl(config)
   const getParams: RequestParamsGenerator = createGetParams(
@@ -59,7 +55,7 @@ export default function connect(config: Configuration): EtherpadMethodMap {
     method: string,
     qs: any = {},
     throwOnEtherpadError: boolean = true,
-  ): Promise<any> {
+  ) {
     const params: OptionsWithUri = getParams(method, qs)
 
     try {
@@ -93,18 +89,19 @@ export default function connect(config: Configuration): EtherpadMethodMap {
   function checkVersion(methodVersion: string): void {
     const result = compareVersions(config.apiVersion, methodVersion)
     if (result < 0) {
-      const message = `Not implemented in Etherpad API v${config.apiVersion}.
-      You should upgrade to >=v${methodVersion}.`
+      const message = `Not implemented in Etherpad API v${
+        config.apiVersion
+      }. You should upgrade to >=v${methodVersion}`
       throw createError(501, message)
     }
   }
 
-  const etherPadApi: EtherpadMethodMap = {
+  const etherPadApi = {
     ////////
     // GROUPS
     ////////
 
-    async createGroup(qs: void, throwOnEtherpadError: boolean = true) {
+    async createGroup(qs?: void, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`createGroup`, qs, throwOnEtherpadError)
     },
@@ -143,7 +140,7 @@ export default function connect(config: Configuration): EtherpadMethodMap {
       return queryEtherpad(`deleteGroup`, qs, throwOnEtherpadError)
     },
 
-    async listAllGroups(qs: void, throwOnEtherpadError: boolean = true) {
+    async listAllGroups(qs?: void, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.0.0`)
       return queryEtherpad(`deleteGroup`, qs, throwOnEtherpadError)
     },
@@ -480,7 +477,7 @@ export default function connect(config: Configuration): EtherpadMethodMap {
       return queryEtherpad(`sendClientsMessage`, qs, throwOnEtherpadError)
     },
 
-    async checkToken(qs: void, throwOnEtherpadError: boolean = true) {
+    async checkToken(qs?: void, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.2.0`)
       return queryEtherpad(`checkToken`, qs, throwOnEtherpadError)
     },
@@ -489,7 +486,7 @@ export default function connect(config: Configuration): EtherpadMethodMap {
     // PADS
     ////////
 
-    async listAllPads(qs: void, throwOnEtherpadError: boolean = true) {
+    async listAllPads(qs?: void, throwOnEtherpadError: boolean = true) {
       checkVersion(`1.2.1`)
       return queryEtherpad(`checkToken`, qs, throwOnEtherpadError)
     },
