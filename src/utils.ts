@@ -7,6 +7,14 @@ export function isString(text: any): text is string {
   return typeof text === `string` && text.length > 0
 }
 
+export function isApiKey(apiKey: string): boolean {
+  return /^[a-f\d]{64}$/.test(apiKey)
+}
+
+export function isVersion(version: string): boolean {
+  return /^\d+\.\d+\.\d+$/.test(version)
+}
+
 export function isInteger(num: any): num is number {
   return Number.isInteger(num)
 }

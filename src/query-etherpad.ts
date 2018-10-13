@@ -48,9 +48,6 @@ interface PadWithText extends PadID {
 }
 
 export default function connect(config: Configuration): EtherpadMethodMap {
-  if (typeof config !== `object`) {
-    throw new Error(`etherpad configuration is mandatory`)
-  }
   config = checkConfiguration(config)
   const ETHERPAD_URL: string = buildEtherpadUrl(config)
   const getParams: RequestParamsGenerator = createGetParams(
