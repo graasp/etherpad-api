@@ -97,7 +97,7 @@ export default function connect(config: Configuration) {
     }
   }
 
-  const etherPadApi = {
+  const etherpadApi = {
     ////////
     // GROUPS
     ////////
@@ -497,5 +497,5 @@ export default function connect(config: Configuration) {
     },
   }
 
-  return Object.freeze(etherPadApi)
+  return Object.freeze(etherpadApi)
 }
