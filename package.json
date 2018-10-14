@@ -2,6 +2,10 @@
   "name": "@hiswe/etherpad-api",
   "version": "1.0.0",
   "description": "Promised based query to etherpad-lite",
+  "keywords": [
+    "etherpad",
+    "api"
+  ],
   "main": "./dist/query-etherpad.js",
   "types": "./dist/query-etherpad.d.ts",
   "engines": {
