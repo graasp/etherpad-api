@@ -3,8 +3,10 @@
 .vscode
 coverage
 src
+test
 .gitignore
 .prettierrc.js
+.travis.yml
 ava.config.js
 package-lock.json
 rollup.config.js

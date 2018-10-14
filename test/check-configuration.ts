@@ -3,7 +3,7 @@ import test from 'ava'
 import checkConfiguration, {
   messages,
   defaultConfiguration,
-} from './check-configuration'
+} from '../src/check-configuration'
 
 const apiKey: string = `6b95f6d270f4f719f1b70e8ad2f742deef94c5bccee7d495250c0fbb8cecefc7`
 

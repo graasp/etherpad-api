@@ -1,9 +1,9 @@
 import test from 'ava'
 import nock from 'nock'
 
-import connect from './query-etherpad'
-import checkConfiguration from './check-configuration'
-import { supportedMethods } from './_test-utils'
+import connect from '../src/query-etherpad'
+import checkConfiguration from '../src/check-configuration'
+import { supportedMethods } from './_utils'
 
 const conf = checkConfiguration({
   apiKey: `6b95f6d270f4f719f1b70e8ad2f742deef94c5bccee7d495250c0fbb8cecefc7`,
