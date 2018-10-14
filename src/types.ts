@@ -1,10 +1,6 @@
-import { OptionsWithUri } from 'request-promise-native'
-
-export interface Configuration {
+export interface EtherpadConfiguration {
   url?: string
   apiKey: string
   apiVersion?: string
   timeout?: number
 }
-
-export type RequestParamsGenerator = (method: string, qs: any) => OptionsWithUri

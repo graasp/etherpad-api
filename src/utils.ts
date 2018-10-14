@@ -1,7 +1,6 @@
 import { URL } from 'url'
-import { OptionsWithUri } from 'request-promise-native'
 
-import { Configuration, RequestParamsGenerator } from './types'
+import { EtherpadConfiguration } from './types'
 
 export function isString(text: any): text is string {
   return typeof text === `string` && text.length > 0
@@ -19,23 +18,10 @@ export function isInteger(num: any): num is number {
   return Number.isInteger(num)
 }
 
-export function buildEtherpadUrl(config: Configuration): string {
+export function buildEtherpadUrl(config: EtherpadConfiguration): string {
   const ETHERPAD_URL: URL = new URL(config.url)
   ETHERPAD_URL.pathname = `api/${config.apiVersion}`
   return ETHERPAD_URL.toString()
-}
-
-export const createGetParams = (
-  ETHERPAD_URL: string,
-  config: Configuration,
-): RequestParamsGenerator => (method: string, qs: any): OptionsWithUri => {
-  const options: OptionsWithUri = {
-    uri: `${ETHERPAD_URL}/${method}`,
-    json: true,
-    timeout: config.timeout,
-    qs: { ...qs, apikey: config.apiKey },
-  }
-  return options
 }
 
 // can test both ETIMEDOUT & ESOCKETTIMEDOUT

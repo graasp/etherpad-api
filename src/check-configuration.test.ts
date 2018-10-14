@@ -4,7 +4,6 @@ import checkConfiguration, {
   messages,
   defaultConfiguration,
 } from './check-configuration'
-import { Configuration } from './types'
 
 const apiKey: string = `6b95f6d270f4f719f1b70e8ad2f742deef94c5bccee7d495250c0fbb8cecefc7`
 
@@ -29,7 +28,7 @@ test(`apikey – invalid`, t => {
 
 test(`apikey – valid`, t => {
   const conf = { apiKey }
-  const configuration: Configuration = checkConfiguration(conf)
+  const configuration = checkConfiguration(conf)
   t.deepEqual(
     configuration,
     { ...defaultConfiguration, ...conf },
@@ -79,7 +78,7 @@ test(`version – invalid`, t => {
 })
 
 test(`version – valid`, t => {
-  const conf: Configuration = { apiKey, apiVersion: `1.0.0` }
+  const conf = { apiKey, apiVersion: `1.0.0` }
   const configuration = checkConfiguration(conf)
   t.deepEqual(
     configuration,
@@ -90,14 +89,15 @@ test(`version – valid`, t => {
 
 test(`timeout – invalid`, t => {
   // @ts-ignore
-  const confWrongType: Configuration = { apiKey, timeout: false }
+  const confWrongType = { apiKey, timeout: false }
+  // @ts-ignore
   const configuration = checkConfiguration(confWrongType)
   t.deepEqual(
     configuration,
     { ...defaultConfiguration, ...{ apiKey } },
     `preserve default timeout is no string is passed`,
   )
-  const confFloat: Configuration = { apiKey, timeout: 1.357 }
+  const confFloat = { apiKey, timeout: 1.357 }
   const configurationFloat = checkConfiguration(confFloat)
   t.deepEqual(
     configurationFloat,
@@ -107,7 +107,7 @@ test(`timeout – invalid`, t => {
 })
 
 test(`timeout – valid`, t => {
-  const conf: Configuration = { apiKey, timeout: 1234 }
+  const conf = { apiKey, timeout: 1234 }
   const configuration = checkConfiguration(conf)
   t.deepEqual(
     configuration,
