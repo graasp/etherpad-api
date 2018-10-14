@@ -21,6 +21,10 @@
     "type": "git",
     "url": "git+https://github.com/Hiswe/query-etherpad.git"
   },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "hiswe <hiswehalya@gmail.com>",
   "license": "MIT",
   "bugs": {
