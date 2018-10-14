@@ -1,6 +1,6 @@
 # etherpad-api
 
-[![Build Status](https://travis-ci.org/Hiswe/etherpad-api.svg?branch=master)](https://travis-ci.org/Hiswe/etherpad-api)
+[![npm version](https://badge.fury.io/js/%40hiswe%2Fetherpad-api.svg)](https://badge.fury.io/js/%40hiswe%2Fetherpad-api) [![Build Status](https://travis-ci.org/Hiswe/etherpad-api.svg?branch=master)](https://travis-ci.org/Hiswe/etherpad-api)
 
 Promised based query to etherpad-lite
 
