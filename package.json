@@ -1,6 +1,6 @@
 {
   "name": "@hiswe/etherpad-api",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Promised based query to etherpad-lite",
   "keywords": [
     "etherpad",
