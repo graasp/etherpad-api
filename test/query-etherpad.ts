@@ -1,7 +1,7 @@
 import test from 'ava'
 import nock from 'nock'
 
-import connect from '../src/query-etherpad'
+import Etherpad from '../src/query-etherpad'
 import checkConfiguration, { messages } from '../src/check-configuration'
 
 const conf = checkConfiguration({
@@ -68,12 +68,12 @@ nock(`${conf.url}/api/${conf.apiVersion}`)
 
 test(`bad options`, t => {
   // @ts-ignore
-  const error = t.throws(() => connect())
+  const error = t.throws(() => new Etherpad())
   t.is(error.message, messages.noConfig, `throw if no config is passed`)
 })
 
 test(`method throw if not supported by the api version`, async t => {
-  const etherpad = connect({ ...conf, apiVersion: `1.0.0` })
+  const etherpad = new Etherpad({ ...conf, apiVersion: `1.0.0` })
   // listAllPads was implemented in 1.2.1
   const error = await t.throwsAsync(() => etherpad.listAllPads())
   t.is(
@@ -84,7 +84,7 @@ test(`method throw if not supported by the api version`, async t => {
 })
 
 test(`regular call`, async t => {
-  const etherpad = connect(conf)
+  const etherpad = new Etherpad(conf)
   const data = await etherpad.listAllPads()
   t.deepEqual(
     data,
@@ -94,7 +94,7 @@ test(`regular call`, async t => {
 })
 
 test(`api error – code 1 => 422`, async t => {
-  const etherpad = connect(conf)
+  const etherpad = new Etherpad(conf)
   const error = await t.throwsAsync(() =>
     etherpad.getLastEdited({ padID: `tutu` }),
   )
@@ -103,24 +103,24 @@ test(`api error – code 1 => 422`, async t => {
 })
 
 test(`api error – code 2 => 500`, async t => {
-  const etherpad = connect(conf)
+  const etherpad = new Etherpad(conf)
   const error = await t.throwsAsync(() => etherpad.listAllGroups())
   t.is(error.statusCode, 500, `has the right status code`)
   t.is(error.message, `internal error`, `keep etherpad message`)
 })
 
 test(`api error – code 4 => 422`, async t => {
-  const etherpad = connect(conf)
+  const etherpad = new Etherpad(conf)
   const error = await t.throwsAsync(() => etherpad.checkToken())
   t.is(error.statusCode, 422, `has the right status code`)
   t.is(error.message, `no or wrong API Key`, `keep etherpad message`)
 })
 
 test(`api error – we can choose to ignore errors`, async t => {
-  const etherpad = connect(conf)
+  const etherpad = new Etherpad(conf)
   const data = await etherpad.createGroupPad(
     {
-      groupID: `hiswe`,
+      padID: `hiswe`,
       padName: `halya`,
     },
     false,
@@ -129,7 +129,7 @@ test(`api error – we can choose to ignore errors`, async t => {
 })
 
 test(`server error – are handled `, async t => {
-  const etherpad = connect(conf)
+  const etherpad = new Etherpad(conf)
   const error400 = await t.throwsAsync(() =>
     etherpad.deleteSession({ sessionID: `hiswe` }),
   )
@@ -148,14 +148,14 @@ test(`server error – are handled `, async t => {
 })
 
 test(`server error – timeout`, async t => {
-  const etherpad = connect(conf)
+  const etherpad = new Etherpad(conf)
   const error = await t.throwsAsync(() => etherpad.getHTML({ padID: `hiswe` }))
   t.is(error.statusCode, 408)
   t.is(error.message, 'Request Timeout')
 })
 
 test(`server error – connection refuse`, async t => {
-  const etherpad = connect(conf)
+  const etherpad = new Etherpad(conf)
   const error = await t.throwsAsync(() =>
     etherpad.sendClientsMessage({ padID: `hiswe`, msg: `coucou` }),
   )

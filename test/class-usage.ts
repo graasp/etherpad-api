@@ -19,7 +19,7 @@ supportedMethods.forEach(methodName => {
     .reply(200, {
       code: 0,
       message: 'ok',
-      data: `reponse: ${methodName}`,
+      data: `response: ${methodName}`,
     })
 })
 
