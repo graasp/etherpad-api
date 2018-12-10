@@ -7,11 +7,14 @@ Promised based query to etherpad-lite
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+
 - [how it works](#how-it-works)
 - [configuration](#configuration)
 - [use](#use)
 - [full example](#full-example)
+- [class use](#class-use)
 - [other stuff](#other-stuff)
+  - [changelog](#changelog)
   - [run the tests](#run-the-tests)
   - [alternatives](#alternatives)
 
@@ -102,7 +105,7 @@ app.get(`/pads/:padID`, (req, res) => {
 })
 ```
 
-## Class use
+## class use
 
 alternatively you could use/extend the original class
 
@@ -120,6 +123,10 @@ const etherpad = new MyEtherpad({
 ```
 
 ## other stuff
+
+### changelog
+
+See [CHANGELOG.md](https://github.com/Hiswe/gulp-svg-symbols/blob/master/CHANGELOG.md)
 
 ### run the tests
 
