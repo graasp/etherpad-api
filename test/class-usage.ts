@@ -1,7 +1,7 @@
 import test from 'ava'
 import nock from 'nock'
 
-import { Etherpad, Pad } from '../src/query-etherpad'
+import Etherpad, { Pad } from '../src/query-etherpad'
 import checkConfiguration from '../src/check-configuration'
 import { supportedMethods } from './_utils'
 

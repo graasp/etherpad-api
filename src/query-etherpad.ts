@@ -90,13 +90,17 @@ export interface PadChatMessage extends PadText, Author {
   time?: number
 }
 
-export class Etherpad {
+export default class Etherpad {
   private _apiUrl: string
   private _apiVersion: string
   private _apiKey: string
   private _timeout: number
 
   constructor(config: EtherpadConfiguration) {
+    // make sure we have an instance even if we forgot the “new” keyword
+    if (!(this instanceof Etherpad)) {
+      return new Etherpad(config)
+    }
     config = checkConfiguration(config)
     this._apiUrl = buildEtherpadUrl(config)
     this._timeout = config.timeout
@@ -428,8 +432,4 @@ export class Etherpad {
     this._checkVersion(`1.2.1`)
     return this._query(`listAllPads`, qs, throwOnEtherpadError)
   }
-}
-
-export default function connect(config: EtherpadConfiguration): Etherpad {
-  return new Etherpad(config)
 }
