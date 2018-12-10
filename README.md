@@ -102,6 +102,19 @@ app.get(`/pads/:padID`, (req, res) => {
 })
 ```
 
+## Class use
+
+alternatively you could use/extend the original class
+
+```js
+const { Etherpad } = require('@hiswe/etherpad-api')
+
+const etherpad = new Etherpad({
+  url: `http://my-etherpad-server`,
+  apiKey: `6b95f6d270f4f719f1b70e8ad2f742deef94c5bccee7d495250c0fbb8cecefc7`,
+})
+```
+
 ## other stuff
 
 ### run the tests

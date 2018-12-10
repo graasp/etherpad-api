@@ -19,60 +19,107 @@ const etherpadErrorCodes = {
   4: 422, // no or wrong API Key  => UnprocessableEntity
 }
 
-interface GroupID {
+export interface Group {
   groupID: string
 }
-
-interface AuthorID {
+export interface GroupMapper {
+  groupMapper: string
+}
+export interface Author {
   authorID: string
 }
-
-interface SessionID {
+export interface AuthorSession extends Author, Group {
+  validUntil: number
+}
+export interface AuthorName {
+  name?: string
+}
+export interface AuthorMapper extends AuthorName {
+  authorMapper: string
+}
+export interface Session {
   sessionID: string
 }
-
-interface PadID {
+export interface PadReadOnly {
+  readOnlyID: string
+}
+export interface Pad {
   padID: string
 }
-
-interface PadWithOptionalRev extends PadID {
+export interface PadHtml extends Pad {
+  html: string
+}
+export interface PadHtmlDiff extends Pad {
+  startRev: string
+  endRev: string
+}
+export interface PadDestination extends Pad {
+  destinationID: string
+  force?: boolean
+}
+export interface GroupPad extends Pad {
+  padName: string
+  text?: string
+}
+export interface PadRev extends Pad {
+  rev: string
+}
+export interface PadOptionalRev extends Pad {
   rev?: string
 }
-
-interface PadWithText extends PadID {
+export interface PadText extends Pad {
   text: string
 }
+export interface PadOptionalText extends Pad {
+  text?: string
+}
+export interface PadPublicStatus extends Pad {
+  publicStatus: boolean
+}
+export interface PadPassword extends Pad {
+  password: string
+}
+export interface PadMessage extends Pad {
+  msg: string
+}
+export interface PadChatHistory extends Pad {
+  start?: number
+  end?: number
+}
+export interface PadChatMessage extends PadText, Author {
+  time?: number
+}
 
-class Etherpad {
-  private apiUrl: string
-  private apiVersion: string
-  private apiKey: string
-  private timeout: number
+export class Etherpad {
+  private _apiUrl: string
+  private _apiVersion: string
+  private _apiKey: string
+  private _timeout: number
 
   constructor(config: EtherpadConfiguration) {
     config = checkConfiguration(config)
-    this.apiUrl = buildEtherpadUrl(config)
-    this.timeout = config.timeout
-    this.apiVersion = config.apiVersion
-    this.apiKey = config.apiKey
+    this._apiUrl = buildEtherpadUrl(config)
+    this._timeout = config.timeout
+    this._apiVersion = config.apiVersion
+    this._apiKey = config.apiKey
   }
 
-  private getParams(method: string, qs: any = {}): OptionsWithUri {
+  private _getParams(method: string, qs: any = {}): OptionsWithUri {
     const options: OptionsWithUri = {
-      uri: `${this.apiUrl}/${method}`,
+      uri: `${this._apiUrl}/${method}`,
       json: true,
-      timeout: this.timeout,
-      qs: { ...qs, apikey: this.apiKey },
+      timeout: this._timeout,
+      qs: { ...qs, apikey: this._apiKey },
     }
     return options
   }
 
-  private async query(
+  private async _query(
     method: string,
     qs: any = {},
-    throwOnEtherpadError: boolean = true,
+    throwOnEtherpadError = true,
   ) {
-    const params: OptionsWithUri = this.getParams(method, qs)
+    const params: OptionsWithUri = this._getParams(method, qs)
 
     try {
       const body = await request(params)
@@ -98,11 +145,11 @@ class Etherpad {
     }
   }
 
-  private checkVersion(methodVersion: string): void {
-    const result = compareVersions(this.apiVersion, methodVersion)
+  private _checkVersion(methodVersion: string): void {
+    const result = compareVersions(this._apiVersion, methodVersion)
     if (result < 0) {
       const message = `Not implemented in Etherpad API v${
-        this.apiVersion
+        this._apiVersion
       }. You should upgrade to >=v${methodVersion}`
       throw createError(501, message)
     }
@@ -112,381 +159,274 @@ class Etherpad {
   // GROUPS
   ////////
 
-  async createGroup(qs?: void, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`createGroup`, qs, throwOnEtherpadError)
+  async createGroup(qs?: void, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`createGroup`, qs, throwOnEtherpadError)
   }
 
   async createGroupIfNotExistsFor(
-    qs: { groupMapper: string },
-    throwOnEtherpadError: boolean = true,
+    qs: GroupMapper,
+    throwOnEtherpadError = true,
   ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`createGroupIfNotExistsFor`, qs, throwOnEtherpadError)
+    this._checkVersion(`1.0.0`)
+    return this._query(`createGroupIfNotExistsFor`, qs, throwOnEtherpadError)
   }
 
-  async deleteGroup(qs: GroupID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`deleteGroup`, qs, throwOnEtherpadError)
+  async deleteGroup(qs: Group, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`deleteGroup`, qs, throwOnEtherpadError)
   }
 
-  async listPads(qs: GroupID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`listPads`, qs, throwOnEtherpadError)
+  async listPads(qs: Group, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`listPads`, qs, throwOnEtherpadError)
   }
 
-  async createGroupPad(
-    qs: {
-      groupID: string
-      padName: string
-      text?: string
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`createGroupPad`, qs, throwOnEtherpadError)
+  async createGroupPad(qs: GroupPad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`createGroupPad`, qs, throwOnEtherpadError)
   }
 
-  async listAllGroups(qs?: void, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`listAllGroups`, qs, throwOnEtherpadError)
+  async listAllGroups(qs?: void, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`listAllGroups`, qs, throwOnEtherpadError)
   }
 
   ////////
   // AUTHOR
   ////////
 
-  async createAuthor(
-    qs: { name?: string },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`createAuthor`, qs, throwOnEtherpadError)
+  async createAuthor(qs: AuthorName, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`createAuthor`, qs, throwOnEtherpadError)
   }
 
   async createAuthorIfNotExistsFor(
-    qs: {
-      authorMapper: string
-      name?: string
-    },
-    throwOnEtherpadError: boolean = true,
+    qs: AuthorMapper,
+    throwOnEtherpadError = true,
   ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`createAuthorIfNotExistsFor`, qs, throwOnEtherpadError)
+    this._checkVersion(`1.0.0`)
+    return this._query(`createAuthorIfNotExistsFor`, qs, throwOnEtherpadError)
   }
 
-  async listPadsOfAuthor(qs: AuthorID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`listPadsOfAuthor`, qs, throwOnEtherpadError)
+  async listPadsOfAuthor(qs: Author, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`listPadsOfAuthor`, qs, throwOnEtherpadError)
   }
 
-  async getAuthorName(qs: AuthorID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.1.0`)
-    return this.query(`getAuthorName`, qs, throwOnEtherpadError)
+  async getAuthorName(qs: Author, throwOnEtherpadError = true) {
+    this._checkVersion(`1.1.0`)
+    return this._query(`getAuthorName`, qs, throwOnEtherpadError)
   }
 
   ////////
   // SESSION
   ////////
 
-  async createSession(
-    qs: {
-      groupID: string
-      authorID: string
-      validUntil: number
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`createSession`, qs, throwOnEtherpadError)
+  async createSession(qs: AuthorSession, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`createSession`, qs, throwOnEtherpadError)
   }
 
-  async deleteSession(qs: SessionID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`deleteSession`, qs, throwOnEtherpadError)
+  async deleteSession(qs: Session, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`deleteSession`, qs, throwOnEtherpadError)
   }
 
-  async getSessionInfo(qs: SessionID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`getSessionInfo`, qs, throwOnEtherpadError)
+  async getSessionInfo(qs: Session, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`getSessionInfo`, qs, throwOnEtherpadError)
   }
 
-  async listSessionsOfGroup(qs: GroupID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`listSessionsOfGroup`, qs, throwOnEtherpadError)
+  async listSessionsOfGroup(qs: Group, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`listSessionsOfGroup`, qs, throwOnEtherpadError)
   }
 
-  async listSessionsOfAuthor(
-    qs: AuthorID,
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`listSessionsOfAuthor`, qs, throwOnEtherpadError)
+  async listSessionsOfAuthor(qs: Author, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`listSessionsOfAuthor`, qs, throwOnEtherpadError)
   }
 
   ////////
   // PAD CONTENT
   ////////
 
-  async getText(qs: PadWithOptionalRev, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`getText`, qs, throwOnEtherpadError)
+  async getText(qs: PadOptionalRev, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`getText`, qs, throwOnEtherpadError)
   }
 
-  async setText(qs: PadWithText, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`setText`, qs, throwOnEtherpadError)
+  async setText(qs: PadText, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`setText`, qs, throwOnEtherpadError)
   }
 
-  async appendText(qs: PadWithText, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.2.13`)
-    return this.query(`appendText`, qs, throwOnEtherpadError)
+  async appendText(qs: PadText, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.13`)
+    return this._query(`appendText`, qs, throwOnEtherpadError)
   }
 
-  async getHTML(qs: PadWithOptionalRev, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`getHTML`, qs, throwOnEtherpadError)
+  async getHTML(qs: PadOptionalRev, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`getHTML`, qs, throwOnEtherpadError)
   }
 
-  async setHTML(
-    qs: {
-      padID: string
-      html: string
-    },
-    throwOnEtherpadError,
-  ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`setHTML`, qs, throwOnEtherpadError)
+  async setHTML(qs: PadHtml, throwOnEtherpadError) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`setHTML`, qs, throwOnEtherpadError)
   }
 
-  async getAttributePool(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.2.8`)
-    return this.query(`getAttributePool`, qs, throwOnEtherpadError)
+  async getAttributePool(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.8`)
+    return this._query(`getAttributePool`, qs, throwOnEtherpadError)
   }
 
-  async getRevisionChangeset(
-    qs: PadWithOptionalRev,
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.2.8`)
-    return this.query(`getRevisionChangeset`, qs, throwOnEtherpadError)
+  async getRevisionChangeset(qs: PadOptionalRev, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.8`)
+    return this._query(`getRevisionChangeset`, qs, throwOnEtherpadError)
   }
 
-  async createDiffHTML(
-    qs: {
-      padID: string
-      startRev: string
-      endRev: string
-    },
-    throwOnEtherpadError,
-  ) {
-    this.checkVersion(`1.2.7`)
-    return this.query(`createDiffHTML`, qs, throwOnEtherpadError)
+  async createDiffHTML(qs: PadHtmlDiff, throwOnEtherpadError) {
+    this._checkVersion(`1.2.7`)
+    return this._query(`createDiffHTML`, qs, throwOnEtherpadError)
   }
 
-  async restoreRevision(
-    qs: {
-      padID: string
-      rev: string
-    },
-    throwOnEtherpadError,
-  ) {
-    this.checkVersion(`1.2.11`)
-    return this.query(`restoreRevision`, qs, throwOnEtherpadError)
+  async restoreRevision(qs: PadRev, throwOnEtherpadError) {
+    this._checkVersion(`1.2.11`)
+    return this._query(`restoreRevision`, qs, throwOnEtherpadError)
   }
 
   ////////
   // CHAT
   ////////
 
-  async getChatHistory(
-    qs: {
-      padID: string
-      start?: number
-      end?: number
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.2.7`)
-    return this.query(`getChatHistory`, qs, throwOnEtherpadError)
+  async getChatHistory(qs: PadChatHistory, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.7`)
+    return this._query(`getChatHistory`, qs, throwOnEtherpadError)
   }
 
-  async getChatHead(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.2.7`)
-    return this.query(`getChatHead`, qs, throwOnEtherpadError)
+  async getChatHead(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.7`)
+    return this._query(`getChatHead`, qs, throwOnEtherpadError)
   }
 
-  async appendChatMessage(
-    qs: {
-      padID: string
-      text: string
-      authorID: string
-      time?: number
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.2.12`)
-    return this.query(`appendChatMessage`, qs, throwOnEtherpadError)
+  async appendChatMessage(qs: PadChatMessage, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.12`)
+    return this._query(`appendChatMessage`, qs, throwOnEtherpadError)
   }
 
   ////////
   // PAD
   ////////
 
-  async createPad(
-    qs: {
-      padID: string
-      text?: string
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`createPad`, qs, throwOnEtherpadError)
+  async createPad(qs: PadOptionalText, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`createPad`, qs, throwOnEtherpadError)
   }
 
-  async getRevisionsCount(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`getRevisionsCount`, qs, throwOnEtherpadError)
+  async getRevisionsCount(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`getRevisionsCount`, qs, throwOnEtherpadError)
   }
 
-  async getSavedRevisionsCount(
-    qs: PadID,
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.2.11`)
-    return this.query(`getSavedRevisionsCount`, qs, throwOnEtherpadError)
+  async getSavedRevisionsCount(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.11`)
+    return this._query(`getSavedRevisionsCount`, qs, throwOnEtherpadError)
   }
 
-  async listSavedRevisions(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.2.11`)
-    return this.query(`listSavedRevisions`, qs, throwOnEtherpadError)
+  async listSavedRevisions(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.11`)
+    return this._query(`listSavedRevisions`, qs, throwOnEtherpadError)
   }
 
-  async saveRevision(
-    qs: PadWithOptionalRev,
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.2.11`)
-    return this.query(`saveRevision`, qs, throwOnEtherpadError)
+  async saveRevision(qs: PadOptionalRev, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.11`)
+    return this._query(`saveRevision`, qs, throwOnEtherpadError)
   }
 
-  async padUsersCount(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`padUsersCount`, qs, throwOnEtherpadError)
+  async padUsersCount(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`padUsersCount`, qs, throwOnEtherpadError)
   }
 
-  async padUsers(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.1.0`)
-    return this.query(`padUsers`, qs, throwOnEtherpadError)
+  async padUsers(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.1.0`)
+    return this._query(`padUsers`, qs, throwOnEtherpadError)
   }
 
-  async deletePad(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`deletePad`, qs, throwOnEtherpadError)
+  async deletePad(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`deletePad`, qs, throwOnEtherpadError)
   }
 
-  async copyPad(
-    qs: {
-      sourceID: string
-      destinationID: string
-      force?: boolean
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.2.8`)
-    return this.query(`copyPad`, qs, throwOnEtherpadError)
+  async copyPad(qs: PadDestination, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.8`)
+    return this._query(`copyPad`, qs, throwOnEtherpadError)
   }
 
-  async movePad(
-    qs: {
-      sourceID: string
-      destinationID: string
-      force?: boolean
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.2.8`)
-    return this.query(`movePad`, qs, throwOnEtherpadError)
+  async movePad(qs: PadDestination, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.8`)
+    return this._query(`movePad`, qs, throwOnEtherpadError)
   }
 
-  async getReadOnlyID(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`getReadOnlyID`, qs, throwOnEtherpadError)
+  async getReadOnlyID(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`getReadOnlyID`, qs, throwOnEtherpadError)
   }
 
-  async getPadID(
-    qs: { readOnlyID: string },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.2.10`)
-    return this.query(`getPadID`, qs, throwOnEtherpadError)
+  async getPadID(qs: PadReadOnly, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.10`)
+    return this._query(`getPadID`, qs, throwOnEtherpadError)
   }
 
-  async setPublicStatus(
-    qs: {
-      padID: string
-      publicStatus: boolean
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`setPublicStatus`, qs, throwOnEtherpadError)
+  async setPublicStatus(qs: PadPublicStatus, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`setPublicStatus`, qs, throwOnEtherpadError)
   }
 
-  async getPublicStatus(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`getPublicStatus`, qs, throwOnEtherpadError)
+  async getPublicStatus(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`getPublicStatus`, qs, throwOnEtherpadError)
   }
 
-  async setPassword(
-    qs: {
-      padID: string
-      password: string
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`setPassword`, qs, throwOnEtherpadError)
+  async setPassword(qs: PadPassword, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`setPassword`, qs, throwOnEtherpadError)
   }
 
-  async isPasswordProtected(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`isPasswordProtected`, qs, throwOnEtherpadError)
+  async isPasswordProtected(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`isPasswordProtected`, qs, throwOnEtherpadError)
   }
 
-  async listAuthorsOfPad(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`listAuthorsOfPad`, qs, throwOnEtherpadError)
+  async listAuthorsOfPad(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`listAuthorsOfPad`, qs, throwOnEtherpadError)
   }
 
-  async getLastEdited(qs: PadID, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.0.0`)
-    return this.query(`getLastEdited`, qs, throwOnEtherpadError)
+  async getLastEdited(qs: Pad, throwOnEtherpadError = true) {
+    this._checkVersion(`1.0.0`)
+    return this._query(`getLastEdited`, qs, throwOnEtherpadError)
   }
 
-  async sendClientsMessage(
-    qs: {
-      padID: string
-      msg: string
-    },
-    throwOnEtherpadError: boolean = true,
-  ) {
-    this.checkVersion(`1.1.0`)
-    return this.query(`sendClientsMessage`, qs, throwOnEtherpadError)
+  async sendClientsMessage(qs: PadMessage, throwOnEtherpadError = true) {
+    this._checkVersion(`1.1.0`)
+    return this._query(`sendClientsMessage`, qs, throwOnEtherpadError)
   }
 
-  async checkToken(qs?: void, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.2.0`)
-    return this.query(`checkToken`, qs, throwOnEtherpadError)
+  async checkToken(qs?: void, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.0`)
+    return this._query(`checkToken`, qs, throwOnEtherpadError)
   }
 
   ////////
   // PADS
   ////////
 
-  async listAllPads(qs?: void, throwOnEtherpadError: boolean = true) {
-    this.checkVersion(`1.2.1`)
-    return this.query(`listAllPads`, qs, throwOnEtherpadError)
+  async listAllPads(qs?: void, throwOnEtherpadError = true) {
+    this._checkVersion(`1.2.1`)
+    return this._query(`listAllPads`, qs, throwOnEtherpadError)
   }
 }
 
