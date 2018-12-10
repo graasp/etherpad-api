@@ -126,7 +126,7 @@ const etherpad = new MyEtherpad({
 
 ### changelog
 
-See [CHANGELOG.md](https://github.com/Hiswe/gulp-svg-symbols/blob/master/CHANGELOG.md)
+See [CHANGELOG.md](https://github.com/Hiswe/etherpad-api/blob/master/CHANGELOG.md)
 
 ### run the tests
 
