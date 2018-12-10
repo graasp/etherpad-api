@@ -1,7 +1,7 @@
 import test from 'ava'
 import nock from 'nock'
 
-import connect from '../src/query-etherpad'
+import Etherpad from '../src/query-etherpad'
 import checkConfiguration from '../src/check-configuration'
 import { supportedMethods } from './_utils'
 
@@ -24,7 +24,7 @@ supportedMethods.forEach(methodName => {
 })
 
 test(`call all methods`, async t => {
-  const etherpad = connect(conf)
+  const etherpad = new Etherpad(conf)
   // nock will throw if we call 2 times the same route
   await Promise.all(
     supportedMethods.map(methodName => etherpad[methodName]({}, false)),

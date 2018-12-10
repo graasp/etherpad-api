@@ -25,10 +25,10 @@ export function buildEtherpadUrl(config: EtherpadConfiguration): string {
 }
 
 // can test both ETIMEDOUT & ESOCKETTIMEDOUT
-export function isTimeout(error): boolean {
+export function isTimeout(error: any): boolean {
   return /TIMEDOUT/.test((error.error && error.error.code) || error.code)
 }
 
-export function isConnectionRefused(error): boolean {
+export function isConnectionRefused(error: any): boolean {
   return /ECONNREFUSED/.test((error.error && error.error.code) || error.code)
 }

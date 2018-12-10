@@ -4,7 +4,7 @@ import { inspect, debuglog } from 'util'
 import compareVersions from 'compare-versions'
 import { OptionsWithUri } from 'request-promise-native'
 
-import { EtherpadConfiguration } from './types'
+import { EtherpadConfiguration, EtherpadResponse } from './types'
 import checkConfiguration from './check-configuration'
 import { buildEtherpadUrl, isTimeout, isConnectionRefused } from './utils'
 
@@ -126,8 +126,9 @@ export default class Etherpad {
     const params: OptionsWithUri = this._getParams(method, qs)
 
     try {
-      const body = await request(params)
-      body.code = +body.code
+      // EtherpadResponse
+      const body = (await request(params)) as EtherpadResponse
+      // body.code = +body.code
       if (body.code === 0) return body.data
       // silence etherpad error
       // ex: when wanting to know if a pad exist we might query it to check
@@ -276,7 +277,7 @@ export default class Etherpad {
     return this._query(`getHTML`, qs, throwOnEtherpadError)
   }
 
-  async setHTML(qs: PadHtml, throwOnEtherpadError) {
+  async setHTML(qs: PadHtml, throwOnEtherpadError = true) {
     this._checkVersion(`1.0.0`)
     return this._query(`setHTML`, qs, throwOnEtherpadError)
   }
@@ -291,12 +292,12 @@ export default class Etherpad {
     return this._query(`getRevisionChangeset`, qs, throwOnEtherpadError)
   }
 
-  async createDiffHTML(qs: PadHtmlDiff, throwOnEtherpadError) {
+  async createDiffHTML(qs: PadHtmlDiff, throwOnEtherpadError = true) {
     this._checkVersion(`1.2.7`)
     return this._query(`createDiffHTML`, qs, throwOnEtherpadError)
   }
 
-  async restoreRevision(qs: PadRev, throwOnEtherpadError) {
+  async restoreRevision(qs: PadRev, throwOnEtherpadError = true) {
     this._checkVersion(`1.2.11`)
     return this._query(`restoreRevision`, qs, throwOnEtherpadError)
   }
