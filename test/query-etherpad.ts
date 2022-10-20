@@ -1,8 +1,8 @@
 import test from 'ava'
 import nock from 'nock'
 
-import Etherpad from '../src/query-etherpad'
 import checkConfiguration, { messages } from '../src/check-configuration'
+import Etherpad from '../src/query-etherpad'
 
 const conf = checkConfiguration({
   apiKey: `6b95f6d270f4f719f1b70e8ad2f742deef94c5bccee7d495250c0fbb8cecefc7`,
@@ -93,12 +93,12 @@ test(`regular call`, async t => {
   )
 })
 
-test(`api error – code 1 => 422`, async t => {
+test(`api error – code 1 => 400`, async t => {
   const etherpad = new Etherpad(conf)
   const error = await t.throwsAsync(() =>
     etherpad.getLastEdited({ padID: `tutu` }),
   )
-  t.is(error.statusCode, 422, `has the right status code`)
+  t.is(error.statusCode, 400, `has the right status code`)
   t.is(error.message, `padID does not exist`, `keep etherpad message`)
 })
 
@@ -109,10 +109,10 @@ test(`api error – code 2 => 500`, async t => {
   t.is(error.message, `internal error`, `keep etherpad message`)
 })
 
-test(`api error – code 4 => 422`, async t => {
+test(`api error – code 4 => 400`, async t => {
   const etherpad = new Etherpad(conf)
   const error = await t.throwsAsync(() => etherpad.checkToken())
-  t.is(error.statusCode, 422, `has the right status code`)
+  t.is(error.statusCode, 400, `has the right status code`)
   t.is(error.message, `no or wrong API Key`, `keep etherpad message`)
 })
 
