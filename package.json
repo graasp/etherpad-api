@@ -13,6 +13,7 @@
   },
   "scripts": {
     "test": "nyc ava",
+    "prepare": "npm run build",
     "build": "del dist && rollup --config",
     "release": "npm run build && np --no-cleanup",
     "toc": "doctoc *.md --github --notitle"
