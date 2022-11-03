@@ -5,7 +5,12 @@
     "noImplicitAny": true,
     "esModuleInterop": true,
     "target": "es2015",
-    "lib": ["es2018"]
+    "lib": [
+      "es2018"
+    ],
+    "strictNullChecks": true
   },
-  "include": ["src/*.ts"]
+  "include": [
+    "src/*.ts"
+  ]
 }

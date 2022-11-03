@@ -18,7 +18,7 @@ export function isInteger(num: any): num is number {
   return Number.isInteger(num)
 }
 
-export function buildEtherpadUrl(config: EtherpadConfiguration): string {
+export function buildEtherpadUrl(config: Required<EtherpadConfiguration>): string {
   const ETHERPAD_URL: URL = new URL(config.url)
   ETHERPAD_URL.pathname = `api/${config.apiVersion}`
   return ETHERPAD_URL.toString()

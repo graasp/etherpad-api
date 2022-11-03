@@ -186,11 +186,11 @@ export default class Etherpad {
     if (!(this instanceof Etherpad)) {
       return new Etherpad(config)
     }
-    config = checkConfiguration(config)
-    this._apiUrl = buildEtherpadUrl(config)
-    this._timeout = config.timeout
-    this._apiVersion = config.apiVersion
-    this._apiKey = config.apiKey
+    const checkedConfig = checkConfiguration(config)
+    this._apiUrl = buildEtherpadUrl(checkedConfig)
+    this._timeout = checkedConfig.timeout
+    this._apiVersion = checkedConfig.apiVersion
+    this._apiKey = checkedConfig.apiKey
   }
 
   private _getParams(method: string, qs: any = {}): OptionsWithUri {

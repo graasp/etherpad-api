@@ -1,9 +1,9 @@
 import isUrl from 'is-url'
 
 import { EtherpadConfiguration } from './types'
-import { isString, isInteger, isApiKey, isVersion } from './utils'
+import { isApiKey, isInteger, isString, isVersion } from './utils'
 
-export const defaultConfiguration: EtherpadConfiguration = Object.freeze({
+export const defaultConfiguration: Required<EtherpadConfiguration> = Object.freeze({
   timeout: 1000,
   apiVersion: `1.2.13`,
   url: `http://0.0.0.0:9001`,
@@ -20,7 +20,7 @@ export const messages = {
 
 export default function getConfiguration(
   config: EtherpadConfiguration,
-): EtherpadConfiguration {
+): Required<EtherpadConfiguration> {
   if (typeof config !== `object`) throw new Error(messages.noConfig)
   if (!isString(config.apiKey)) throw new Error(messages.noApiKey)
   if (!isApiKey(config.apiKey)) throw new Error(messages.invalidApiKey)
@@ -33,7 +33,7 @@ export default function getConfiguration(
     ? config.apiVersion.trim()
     : defaultConfiguration.apiVersion
   if (!isVersion(apiVersion)) throw new Error(messages.invalidVersion)
-  const securedConfig: EtherpadConfiguration = {
+  const securedConfig: Required<EtherpadConfiguration> = {
     url,
     apiVersion,
     apiKey: config.apiKey.trim(),
