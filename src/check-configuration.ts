@@ -1,14 +1,13 @@
-import isUrl from 'is-url'
-
 import { EtherpadConfiguration } from './types'
-import { isApiKey, isInteger, isString, isVersion } from './utils'
+import { isApiKey, isInteger, isString, isUrl, isVersion } from './utils'
 
-export const defaultConfiguration: Required<EtherpadConfiguration> = Object.freeze({
-  timeout: 1000,
-  apiVersion: `1.2.13`,
-  url: `http://0.0.0.0:9001`,
-  apiKey: `0000000000000000000000000000000000000000000000000000000000000000`,
-})
+export const defaultConfiguration: Required<EtherpadConfiguration> =
+  Object.freeze({
+    timeout: 1000,
+    apiVersion: `1.2.13`,
+    url: `http://0.0.0.0:9001`,
+    apiKey: `0000000000000000000000000000000000000000000000000000000000000000`,
+  })
 
 export const messages = {
   noConfig: `Etherpad configuration is mandatory`,
