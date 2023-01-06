@@ -143,7 +143,7 @@ export interface RevisionsCount {
 }
 
 export interface SavedRevisionsCount {
-  savedRevisions: 42
+  savedRevisions: number
 }
 
 export interface SavedRevisions {
