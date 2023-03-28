@@ -330,12 +330,12 @@ export default class Etherpad {
 
   async listSessionsOfGroup(qs: Group, throwOnEtherpadError = true) {
     this._checkVersion(`1.0.0`)
-    return this._query<{[sessionID: string]: AuthorSession} | null>(`listSessionsOfGroup`, qs, throwOnEtherpadError)
+    return this._query<{[sessionID: string]: AuthorSession | null} | null>(`listSessionsOfGroup`, qs, throwOnEtherpadError)
   }
 
   async listSessionsOfAuthor(qs: Author, throwOnEtherpadError = true) {
     this._checkVersion(`1.0.0`)
-    return this._query<{[sessionID: string]: AuthorSession} | null>(`listSessionsOfAuthor`, qs, throwOnEtherpadError)
+    return this._query<{[sessionID: string]: AuthorSession | null} | null>(`listSessionsOfAuthor`, qs, throwOnEtherpadError)
   }
 
   ////////
