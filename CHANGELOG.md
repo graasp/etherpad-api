@@ -9,6 +9,13 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## [2.1.1](https://github.com/graasp/etherpad-api/compare/v2.1.0...v2.1.1) (2023-04-17)
+
+
+### Bug Fixes
+
+* scope package name to graasp ([6c8c5bd](https://github.com/graasp/etherpad-api/commit/6c8c5bd574a7993a6aaaeeb0c53c3f01d4b50aea))
+
 ## [2.1.0](https://github.com/graasp/etherpad-api/compare/v2.0.1...v2.1.0) (2023-04-17)
 
 
