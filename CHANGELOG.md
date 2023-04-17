@@ -9,6 +9,13 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## [2.1.0](https://github.com/graasp/etherpad-api/compare/v2.0.1...v2.1.0) (2023-04-17)
+
+
+### Features
+
+* replace request-promise-native with axios, use POST for set content methods, sanitize HTML ([#5](https://github.com/graasp/etherpad-api/issues/5)) ([6fee4e8](https://github.com/graasp/etherpad-api/commit/6fee4e843f4ad32ef879db2e2431e91f71b4df7f))
+
 ## 2.0.1 (2023-03-28)
 
 
