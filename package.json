@@ -1,5 +1,5 @@
 {
-  "name": "@hiswe/etherpad-api",
+  "name": "@graasp/etherpad-api",
   "version": "2.1.0",
   "description": "Promised based query to etherpad-lite",
   "keywords": [
