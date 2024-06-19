@@ -13,6 +13,7 @@
   },
   "scripts": {
     "test": "nyc ava",
+    "prepack": "yarn build",
     "prepare": "yarn build",
     "build": "del dist && rollup --config",
     "release": "yarn run build && np --no-cleanup",
