@@ -20,6 +20,7 @@ const baseConfig = {
 
 const npmConfig = merge({}, baseConfig, {
   output: {
+    exports: 'named',
     file: `dist/${NAME}.js`,
   },
   plugins: [typescript()],

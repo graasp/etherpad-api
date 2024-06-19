@@ -176,7 +176,8 @@ export interface Stats {
   totalActivePads: number;
 }
 
-export default class Etherpad {
+
+export class Etherpad {
   private _apiUrl: string;
   private _apiVersion: string;
   private _apiKey: string;
